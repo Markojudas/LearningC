@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1612491014 source:c:\users\josrh\onedrive\documents\c language\countingprog\main.c
+	<stdio.h>
+	<stdlib.h>
+
