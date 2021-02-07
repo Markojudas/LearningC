@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1612677731 source:c:\users\josrh\onedrive\documents\c language\stringsplit\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
