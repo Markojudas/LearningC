@@ -19,6 +19,22 @@ int days_of_month[] = {
     31  // dec
 };
 
+char *month_names[] = {
+    "Null",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+};
+
 int
 is_leapyear(int yy) {
     // use this to determine if a year gets an extra day for feb
@@ -67,45 +83,61 @@ total_days_so_far(int dd, int mm, int yy) {
 void
 handle_print(int mm, int yy) {
     // handle print logic here
-    char *day_header = "Su Mo Tu We Th Fr Sa \n";
+    char *day_header = "Su Mo Tu We Th Fr Sa \n\n";
     // index pad, no need to adjust index for mm
     int day_count = days_of_month[mm];
+    char *month = month_names[mm];
     // total days so far modulus 7 is our week index for display
     int week_index = total_days_so_far(1, mm, yy) % 7;
 
     // account for leap years if we're handling feb
+
+
     if (mm == 2 && is_leapyear(yy)) {
         day_count += 1;
     }
+
     // start the calendar display
+
+    printf("\n      ");
+    printf(month);
+    printf("\n\n");
+
+
     printf(day_header);
     // pad display up to week index
     for (int i = 0; i < week_index; i ++) {
         printf("   ");
     }
+
     // keep the week index rolling on a modulus
     for (int i = 1; i <= day_count; i++, week_index++ ) {
         // right align the integer
         printf("%2d ", i);
         // newline after every Sa
         if (week_index % 7 == 6) {
-            printf("\n");
+            printf("\n\n");
         }
     }
     // clean up
-    printf("\n");
+    printf("\n\n");
 }
 
 void
 handle_count(int dd0, int mm0, int yy0,
              int dd1, int mm1, int yy1) {
     // get the absolute value so we don't care about ordering
-    printf("%d\n", abs(total_days_so_far(dd1, mm1, yy1) -
+    printf("%d\n\n", abs(total_days_so_far(dd1, mm1, yy1) -
                        total_days_so_far(dd0, mm0, yy0)));
 }
 
 int
 main() {
+    printf("****CALENDAR PROGRAM****\n\n");
+    printf("List of Commands:\n\n");
+    printf("* print MM/YYYY\t\t\t prints calendar\n");
+    printf("* count MM/DD/YYYY mm/dd/yyyy\t difference between two dates\n");
+    printf("* quit\t\t\t\t Exits the program\n\n");
     while (1) {
         char cmd[512], *line = NULL;
         size_t len = 0;
@@ -116,12 +148,16 @@ main() {
         if (getline(&line, &len, stdin) < 0) {
             fprintf(stderr, "Fatal: could not get line\n");
             return 1;
-        };
+        }
 
         memset(cmd, 0, sizeof(cmd));
         sscanf(line, "%s", cmd);
 
-        if (!strcmp(cmd, "print")) {
+        if (!strcmp(cmd, "quit")){
+            break;
+        }
+
+        else if (!strcmp(cmd, "print")) {
             int mm, yy;
             if (sscanf(line+strlen(cmd), "%d/%d", &mm, &yy) == 2) {
                 handle_print(mm, yy);
