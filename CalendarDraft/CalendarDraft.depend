@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1612839427 source:c:\users\josrh\onedrive\documents\c language\calendardraft\main.c
+	<stdio.h>
+	<string.h>
+
