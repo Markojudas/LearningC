@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1613691083 source:c:\users\josrh\onedrive\documents\c language\chessgameprototype\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
