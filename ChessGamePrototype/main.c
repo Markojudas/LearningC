@@ -4,6 +4,7 @@
 #define MAX_CELLS_ROW 8
 #define MAX_CELLS_COLUMN 8
 #define MAX_COMMAND_TOKEN_LENGTH 15
+#define OUT_OF_BOUNDS 8
 
 static int chessBoard[8][8] = {
     {-4, -2, -3, -5, -6, -3, -2, -4}, //chessBoard[0][0-7]
@@ -26,8 +27,8 @@ void printBoard(){
     printf("     ******************************************\n");
 
     for(int x = 0; x < MAX_CELLS_COLUMN; x++){
-        printf("%d    *  ", (8 - x));
-        for(int y = 0; y < MAX_CELLS_COLUMN; y++){
+        printf("%d    *  ", (OUT_OF_BOUNDS - x));
+        for(int y = 0; y < MAX_CELLS_ROW ; y++){
             if(chessBoard[x][y] != 0){
                 printf("%2d |", chessBoard[x][y]);
             }else{
@@ -55,16 +56,134 @@ char getCommandWord(char command[], int maxLength) {
 }
 
 void handleMove(){
-    char token[MAX_COMMAND_TOKEN_LENGTH];
-    //char token[MAX_COMMAND_TOKEN_LENGTH];
+    char token[MAX_COMMAND_TOKEN_LENGTH], inputx;
+    int column = 0, row = 0;
+
     if(getCommandWord(token, MAX_CELLS_COLUMN) != '\n'){
         printf("\nERROR IN INPUT!\n\n");
         while(getCommandWord(token, MAX_COMMAND_TOKEN_LENGTH) != '\n');
         return;
     }else{
-        printf("\nPENDING IMPLEMENTATION OF MOVE\n\n");
-        return; //placeholder
+
+       inputx = token[0];
+       row = token[1] - '0';
+
+       switch(inputx){
+           case 'a':
+                column = 0;
+                break;
+            case 'b':
+                column = 1;
+                break;
+            case 'c' :
+                column = 2;
+                break;
+            case 'd' :
+                column = 3;
+                break;
+            case 'e' :
+                column = 4;
+                break;
+            case 'f' :
+                column = 5;
+                break;
+            case 'g' :
+                column = 6;
+                break;
+            case 'h' :
+                column = 7;
+                break;
+            default:
+                column = OUT_OF_BOUNDS;
+                break;
+       }
+
+       int cell;
+       //int *p;
+
+       //p = &cell;
+
+       if(column != OUT_OF_BOUNDS){
+            cell = chessBoard[OUT_OF_BOUNDS - row][column];
+       }
+       else{
+           printf("\nINVALID INPUT\n\n");
+           return;
+       }
+
+       switch(abs(cell)){
+           //debugger printouts -> will be replaced with calling move function depending on piece
+            case 1 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK PAWN\n");
+                    //call to move pawn
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE PAWN\n");
+                    //call to move pawn
+                }
+                break;
+            case 4 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK ROOK\n");
+                    //call to move rook
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE ROOK\n");
+                    //call to move rook
+                }
+                break;
+            case 2 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK KINGHT\n");
+                    //call to move knight
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE KNIGHT\n");
+                    //call to move knight
+                }
+                break;
+            case 3 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK BISHOP\n");
+                    //call to move bishop
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE BISHOP\n");
+                    //call to move bishop
+                }
+                break;
+            case 5 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK QUEEN\n");
+                    //call to move queen
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE QUEEN\n");
+                    //call to move queen
+                }
+                break;
+            case 6 :
+                if((cell * -1) > 0){
+                    printf("\nTHIS IS A BLACK KING\n");
+                    //call to move king
+                }
+                else if((cell * -1) < 0){
+                    printf("\nTHIS IS A WHITE KING\n");
+                    //call to move king
+                }
+                break;
+            default :
+                printf("\nCELL IS EMPTY\n\n");
+                break;
+       }
+
+            //debugger printouts!!!!
+            printf("Cell : %d\n", cell);
+            printf("column : %d\n", column + 1);
+            printf("row : %d\n\n", row);
     }
+
 }
 
 void handleCapture(){
@@ -89,13 +208,13 @@ int main()
     printf("\t\tCHESS GAME!!!\n");
     printf("*********************************************\n\n");
     printf("Commands:\n");
-    printf("mv <AB> <ab>");    printf("\t\tmoves AB to position ab\n");
+    printf("mv <AB> <ab>");    printf("\t\tMoves AB to position ab\n");
     printf("cp <AB> <ab>");    printf("\t\tAB captures ab\n");
-    printf("show"); printf("\t\t\tprints out board\n");
-    printf("quit"); printf("\t\t\tquits the game\n\n");
+    printf("show"); printf("\t\t\tPrints out board\n");
+    printf("quit"); printf("\t\t\tQuits the game\n\n");
 
-    //printf("%d\n", chessBoard[0][7]); -> debugger
-
+    //printf("%d\n", chessBoard[0][7]); // debugger
+    //printf("%d\n", chessBoard[7][5]); //debugger = 3
 
     while(1){
         printf("Command: ");
@@ -136,5 +255,4 @@ int main()
                 lastCharacter = getCommandWord(cmd, MAX_COMMAND_TOKEN_LENGTH);
         }
     }
-
 }
