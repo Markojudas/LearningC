@@ -17,6 +17,8 @@ static int chessBoard[8][8] = {
     {4, 2, 3, 5, 6, 3, 2, 4}          //chessBoard[7][0-7]
 };
 
+int currentTurn = 0;
+
 void printBoard(){
     char *header = "  a |  b |  c |  d |  e |  f |  g |  h |\n";
 
@@ -36,7 +38,7 @@ void printBoard(){
             }
             printf(" ");
         }
-        printf("\n");
+        printf("\n\n");
     }
 }
 
@@ -107,6 +109,99 @@ void getCell(char token[], int *cellContent, int *row, int *column){
             */
 }
 
+int pawnMoves(int row1, int column1, int row2, int column2){
+    int rank;
+    int file;
+
+    rank = row2 - row1;
+    file = column2 - column1;
+
+    int frontCellWhite = chessBoard[OUT_OF_BOUNDS - (row1 + 1)][column1];
+    int frontCellBlack = chessBoard[OUT_OF_BOUNDS - (row1 - 1)][column1];
+
+    int destinationCell = chessBoard[OUT_OF_BOUNDS - row2][column2];
+
+    if((currentTurn == 0) && (destinationCell == 0) && (frontCellWhite == 0)){
+        if((row1 == 2) && (file == 0)){
+           if((rank <= 2) && (rank > 0)){
+               return 1;
+           }else{
+               printf("\nINVALID MOVE!\n");
+               return 0;
+           }
+        }
+        else if((rank == 1) && (file == 0)){
+            return 1;
+        }
+        else{
+            printf("\nINVALID MOVE!\n");
+            return 0;
+        }
+    }
+    else if((currentTurn == 1) && (destinationCell == 0) &&(frontCellBlack == 0)){
+        if((row1 == 7) && (destinationCell == 0)){
+            if((rank >= -2) && (file == 0)){
+                return 1;
+            }else{
+                printf("\nINVALID MOVE!\n");
+                return 0;
+            }
+        }
+        else if((rank == -1) && (file == 0)){
+            return 1;
+        }
+        else{
+            printf("\nINVALID MOVE!\n");
+            return 0;
+        }
+    }
+    else if((currentTurn == 0) && (destinationCell != 0)){
+        if((rank == 1) && ((file == 1) || (file == -1))){
+            return 1;
+        }
+        else{
+            printf("\nINVALID MOVE!\n");
+            return 0;
+        }
+    }
+    else if((currentTurn == 1) && (destinationCell != 0)){
+        if((rank == -1) && ((file == 1) || (file == -1))){
+            return 1;
+        }
+        else{
+            printf("\nINVALID MOVE!\n");
+            return 0;
+        }
+    }
+    else{
+        printf("\nINVALID MOVE!\n");
+        return 0;
+    }
+    return 0;
+
+}
+
+int kingMoves(int row1, int column1, int row2, int column2){
+    int rank;
+    int file;
+
+    rank = row2 - row1;
+    file = column2 - column1;
+
+    if(((file == 0) || (file == 1) || (file == -1)) && ((rank == 1) || (rank == -1))){
+        return 1;
+    }
+    else if( ((rank == 0) || (rank == 1) || (rank == -1)) && ( (file == 1) || (file == -1) ) ){
+        return 1;
+    }
+    else{
+        printf("\nINVALID MOVE!\n\n");
+        return 0;
+    }
+    return 0;
+
+}
+
 int knightMoves(int row1, int column1, int row2, int column2){
 
     int rank;
@@ -122,7 +217,7 @@ int knightMoves(int row1, int column1, int row2, int column2){
                 return 1;
             }
             else{
-                printf("INVALID MOVE\n");
+                printf("\nINVALID MOVE\n");
                 return 0;
             }
         }
@@ -131,19 +226,19 @@ int knightMoves(int row1, int column1, int row2, int column2){
                 return 1;
             }
             else{
-                printf("INVALID MOVE\n");
+                printf("\nINVALID MOVE\n");
                 return 0;
             }
 
         }
         else{
-            printf("INVALID MOVE\n");
+            printf("\nINVALID MOVE\n");
             return 0;
         }
 
     }
     else{
-        printf("INVALID MOVE!\n");
+        printf("\nINVALID MOVE!\n");
         return 0;
     }
     return 0;
@@ -197,8 +292,12 @@ void replaceCell(int row1, int column1, int row2, int column2){
     printBoard();
     printf("\n");
 
+    if(currentTurn == 0){
+        currentTurn = 1;
+    }else{
+        currentTurn = 0;
+    }
 }
-
 
 void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column2){
 
@@ -208,12 +307,16 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
            //debugger printouts -> will be replaced with calling move function depending on piece
             case 1 :
                 if((cell1 * -1) > 0){
-                    printf("\nTHIS IS A BLACK PAWN\n");
-                    //call to move pawn
+                    if(pawnMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK PAWN TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 else if((cell1 * -1) < 0){
-                    printf("\nTHIS IS A WHITE PAWN\n");
-                    //call to move pawn
+                    if(pawnMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING WHITE PAWN TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             case 4 :
@@ -227,23 +330,17 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
                 }
                 break;
             case 2 :
-                if(cell2 == 0){
-                    if((cell1 * -1) > 0){
-                        if(knightMoves(row1, column1, row2, column2) == 1){
-                            printf("MOVING BLACK KNIGHT TO %c%d!\n\n", fileName2, row2);
-                            replaceCell(row1, column1, row2, column2);
-                        }
-                    }
-                    else if((cell1 * -1) < 0){
-                        if(knightMoves(row1, column1, row2, column2) == 1){
-                            printf("MOVING WHITE KNIGHT TO %c%d!\n\n", fileName2, row2);
-                            replaceCell(row1, column1, row2, column2);
-                        }
+                if((cell1 * -1) > 0){
+                    if(knightMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK KNIGHT TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
                     }
                 }
-                else{
-                    printf("INVALID MOVE! CELL NO EMPTY\n\n");
-                    return;
+                else if((cell1 * -1) < 0){
+                    if(knightMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING WHITE KNIGHT TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             case 3 :
@@ -268,12 +365,16 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
                 break;
             case 6 :
                 if((cell1 * -1) > 0){
-                    printf("\nTHIS IS A BLACK KING\n");
-                    //call to move king
+                    if(kingMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK KING TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 else if((cell1 * -1) < 0){
-                    printf("\nTHIS IS A WHITE KING\n");
-                    //call to move king
+                    if(kingMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK KING TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             default :
@@ -314,33 +415,120 @@ void handleMove(){
        getCell(token2, x, row2Pointer, column2Pointer);
        secondCell = *x;
 
-        //debugger printouts!!!!
-       printf("\nfirst cell: %d\n", firstCell);
-       printf("row: %d\n", row1);
-       printf("column: %d\n\n", column1 + 1);
-       printf("second cell: %d\n", secondCell);
-       printf("row: %d\n", row2);
-       printf("column: %d\n\n", column2 + 1);
+        /*
+            debugger printouts!!!!
+            printf("\nfirst cell: %d\n", firstCell);
+            printf("row: %d\n", row1);
+            printf("column: %d\n\n", column1 + 1);
+            printf("second cell: %d\n", secondCell);
+            printf("row: %d\n", row2);
+            printf("column: %d\n\n", column2 + 1);
+       */
 
-       if(chessBoard[OUT_OF_BOUNDS - row1][column1] != 0){
-            movePiece(firstCell, row1, column1, secondCell, row2, column2);
-       }else{
-           printf("NOTHING TO MOVE\n\n");
-           return;
+
+
+       if((currentTurn == 0) && (firstCell * -1 < 0)){
+
+            if(secondCell != 0){
+                printf("\nCANNOT MOVE HERE! POSITION IS TAKEN\n\n");
+                return;
+            }
+            if(firstCell != 0){
+                movePiece(firstCell, row1, column1, secondCell, row2, column2);
+                //currentTurn = 1;
+            }else{
+                printf("\nNOTHING TO MOVE\n\n");
+                return;
+            }
+       }
+       else if((currentTurn == 1) && (firstCell * -1 > 0)){
+
+            if(secondCell != 0){
+                printf("\nCANNOT MOVE HERE! POSITION IS TAKEN\n\n");
+                return;
+            }
+
+            if(firstCell != 0){
+                movePiece(firstCell, row1, column1, secondCell, row2, column2);
+                //currentTurn = 0;
+            }else{
+                printf("\nNOTHING TO MOVE\n\n");
+                return;
+            }
+        }
+       else{
+            printf("\nIT'S NOT YOUR TURN YET!!\n\n");
        }
 }
 
 void handleCapture(){
-    char token[MAX_COMMAND_TOKEN_LENGTH];
-    //char token[MAX_COMMAND_TOKEN_LENGTH];
-    if(getCommandWord(token, MAX_CELLS_COLUMN) != '\n'){
+    char token1[MAX_COMMAND_TOKEN_LENGTH];
+    char token2[MAX_COMMAND_TOKEN_LENGTH];
+    int firstCell, cellContent, row1, row2, column1, column2;
+    int secondCell;
+    int *x;
+    x = &cellContent;
+    int *row1Pointer; int *row2Pointer; int *column1Pointer; int *column2Pointer;
+
+    row1Pointer = &row1;
+    row2Pointer = &row2;
+    column1Pointer = &column1;
+    column2Pointer = &column2;
+
+
+    if(getCommandWord(token1, MAX_CELLS_COLUMN) == '\n'){
         printf("\nERROR IN INPUT!\n\n");
-        while(getCommandWord(token, MAX_COMMAND_TOKEN_LENGTH) != '\n');
+        while(getCommandWord(token1, MAX_COMMAND_TOKEN_LENGTH) == '\n');
         return;
-    }else{
-        printf("\nPENDING IMPLEMENTATION OF CAPTURE\n\n");
-        return; //placeholder
     }
+
+    if(getCommandWord(token2, MAX_CELLS_COLUMN) !='\n'){
+        printf("\nERROR IN INPUT!\n\n");
+        while(getCommandWord(token2, MAX_CELLS_COLUMN) != '\n');
+        return;
+    }
+
+       getCell(token1, x, row1Pointer, column1Pointer);
+       firstCell = *x;
+       getCell(token2, x, row2Pointer, column2Pointer);
+       secondCell = *x;
+
+
+       if((secondCell == 0)){
+                printf("\nNOTHING TO CAPTURE\n\n");
+                return;
+        }
+        else{
+            if((currentTurn == 0) && (firstCell * -1 < 0)){
+                if(secondCell * -1 < 0){
+                    printf("\nTHIS IS A WHITE PIECE!\n\n");
+                    return;
+                }
+                if(firstCell != 0){
+                    movePiece(firstCell, row1, column1, secondCell, row2, column2);
+                    //currentTurn = 1;
+                }else{
+                    printf("\nNO PIECE TO MOVE!\n\n");
+                    return;
+                }
+            }
+            else if((currentTurn == 1) && (firstCell * -1 > 0)){
+                if(secondCell * -1 > 0){
+                    printf("\nTHIS IS A BLACK PIECE!\n\n");
+                }
+                if(firstCell != 0){
+                    movePiece(firstCell, row1, column1, secondCell, row2, column2);
+                    //currentTurn = 0;
+                }else{
+                    printf("\nNO PIECE TO MOVE!!\n\n");
+                    return;
+                }
+            }
+            else{
+                printf("\nIT'S NOT YOUR TURN YET!!\n\n");
+            }
+        }
+
 }
 
 int main()
@@ -359,9 +547,17 @@ int main()
 
     //printf("%d\n", chessBoard[0][7]); // debugger
     //printf("%d\n", chessBoard[7][5]); //debugger = 3
+    printBoard();
+    printf("\n");
 
     while(1){
-        printf("Command: ");
+
+        if(currentTurn == 0){
+           printf("WHITE TURN: ");
+        }else{
+            printf("BLACK TURN: ");
+        }
+
         lastCharacter = getCommandWord(cmd, MAX_COMMAND_TOKEN_LENGTH);
 
         if(!strcmp(cmd, "quit")){
