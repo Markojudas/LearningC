@@ -181,6 +181,168 @@ int pawnMoves(int row1, int column1, int row2, int column2){
 
 }
 
+int rookMoves(int row1, int column1, int row2, int column2){
+    int rank;
+    int file;
+
+    rank = row2 - row1;
+    file = column2 - column1;
+
+    int isQueen = 0;
+
+    if(abs(chessBoard[OUT_OF_BOUNDS - row1][column1]) == 5){
+        isQueen = 1;
+    }
+
+    if (file != 0){
+        if(file * -1 < 0){
+            for(int i = column1 + 1; i < column2; i++){
+                if(chessBoard[OUT_OF_BOUNDS - row1][i] != 0){
+                    printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                    return 0;
+                }
+            }
+        }
+        if (file * -1 > 0){
+            for(int i = column1 - 1; i > column2; i--){
+                if(chessBoard[OUT_OF_BOUNDS - row1][i] != 0){
+                    printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                    return 0;
+                }
+            }
+        }
+        if(((file < OUT_OF_BOUNDS) || (file > -(OUT_OF_BOUNDS))) && (rank == 0)){
+            //printf("\nHELLO!\n\n");
+            return 1;
+
+        }
+        else{
+            if(isQueen != 1){
+                printf("\nINVALID MOVE OF ROOK!\n\n");
+            }
+            return 0;
+        }
+    }
+    else if(rank != 0){
+        if(rank * -1 < 0){
+            for(int i = row1 + 1; i < row2; i++){
+                if(chessBoard[OUT_OF_BOUNDS - i][column1] != 0){
+                    printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                    return 0;
+                }
+            }
+        }
+        else if(rank * -1 > 0){
+            for(int i = row1 - 1; i > row2; i--){
+                if(chessBoard[OUT_OF_BOUNDS - i][column1] != 0){
+                    printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                    return 0;
+                }
+            }
+        }
+        if((file == 0) && ((rank < OUT_OF_BOUNDS) || (rank > -(OUT_OF_BOUNDS)))){
+            return 1;
+        }
+    }
+    else{
+        if(isQueen != 1){
+            printf("\nINVALID MOVE!3");
+        }
+        return 0;
+    }
+    return 0;
+}
+
+int bishopMoves(int row1, int column1, int row2, int column2){
+
+    int rank;
+    int file;
+    rank = row2 - row1;
+    file = column2 - column1;
+
+    int absoluteRank = abs(rank);
+    int absoluteFile = abs(file);
+
+    int isQueen = 0;
+
+    if(abs(chessBoard[OUT_OF_BOUNDS - row1][column1]) == 5){
+        isQueen = 1;
+    }
+
+    if((rank != 0) && (file != 0)){
+        if(rank * -1 < 0){
+            if(file * -1 > 0){
+                for(int i = row1+1; i < row2; i++){
+                    for(int j = column1-1; j > column2; j--){
+                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                            return 0;
+                        }
+                    }
+                }
+            }
+            else if(file * - 1 < 0){
+                for(int i = row1+1; i < row2; i++){
+                    for(int j = column1+1; j < column2; j++){
+                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+        else if(rank * -1 > 0){
+            if(file * -1 < 0){
+                for(int i = row1-1; i > row2; i--){
+                    for(int j = column1+1; j < column2; j++){
+                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                            return 0;
+                        }
+                    }
+                }
+            }
+            if(file * -1 > 0){
+                for(int i = row1-1; i > row2; i--){
+                    for(int j = column1-1; j > column2; j--){
+                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                            return 0;
+                        }
+                    }
+                }
+            }
+        }
+        if(absoluteRank == absoluteFile){
+            return 1;
+        }
+        else{
+            if(isQueen == 0){
+                printf("\n\nINVALID MOVE1!\n\n");
+            }
+            return 0;
+        }
+
+    }
+    if(isQueen != 1){
+        printf("INVALID MOVE2!\n\n");
+    }
+    return 0;
+
+}
+
+int queenMoves(int row1, int column1, int row2, int column2){
+
+    int queenBishopMove = bishopMoves(row1, column1, row2, column2);
+    int queenRookMove = rookMoves(row1, column1, row2, column2);
+
+    if((queenBishopMove == 1) || queenRookMove == 1){
+        return 1;
+    }
+    return 0;
+}
+
 int kingMoves(int row1, int column1, int row2, int column2){
     int rank;
     int file;
@@ -321,12 +483,16 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
                 break;
             case 4 :
                 if((cell1 * -1) > 0){
-                    printf("\nTHIS IS A BLACK ROOK\n");
-                    //call to move rook
+                    if(rookMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK ROOK TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 else if((cell1 * -1) < 0){
-                    printf("\nTHIS IS A WHITE ROOK\n");
-                    //call to move rook
+                    if(rookMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING WHITE ROOK TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             case 2 :
@@ -345,22 +511,30 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
                 break;
             case 3 :
                 if((cell1 * -1) > 0){
-                    printf("\nTHIS IS A BLACK BISHOP\n");
-                    //call to move bishop
+                    if(bishopMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK BISHOP TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 else if((cell1 * -1) < 0){
-                    printf("\nTHIS IS A WHITE BISHOP\n");
-                    //call to move bishop
+                    if(bishopMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING WHITE BISHOP TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             case 5 :
                 if((cell1 * -1) > 0){
-                    printf("\nTHIS IS A BLACK QUEEN\n");
-                    //call to move queen
+                    if(queenMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING BLACK QUEEN TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 else if((cell1 * -1) < 0){
-                    printf("\nTHIS IS A WHITE QUEEN\n");
-                    //call to move queen
+                    if(queenMoves(row1, column1, row2, column2) == 1){
+                        printf("\nMOVING WHITE QUEEN TO %c%d!\n\n", fileName2, row2);
+                        replaceCell(row1, column1, row2, column2);
+                    }
                 }
                 break;
             case 6 :
@@ -415,19 +589,21 @@ void handleMove(){
        getCell(token2, x, row2Pointer, column2Pointer);
        secondCell = *x;
 
-        /*
-            debugger printouts!!!!
+
+            //debugger printouts!!!!
             printf("\nfirst cell: %d\n", firstCell);
             printf("row: %d\n", row1);
             printf("column: %d\n\n", column1 + 1);
             printf("second cell: %d\n", secondCell);
             printf("row: %d\n", row2);
             printf("column: %d\n\n", column2 + 1);
-       */
 
+       if((currentTurn == 0)){
 
-
-       if((currentTurn == 0) && (firstCell * -1 < 0)){
+            if(firstCell * -1 > 0){
+                printf("\nIT'S NOT YOUR TURN YET\n\n");
+                return;
+            }
 
             if(secondCell != 0){
                 printf("\nCANNOT MOVE HERE! POSITION IS TAKEN\n\n");
@@ -441,7 +617,12 @@ void handleMove(){
                 return;
             }
        }
-       else if((currentTurn == 1) && (firstCell * -1 > 0)){
+       else if((currentTurn == 1)){
+
+            if(firstCell * -1 < 0){
+                printf("\nIT'S NOT YOUR TURN YET\n\n");
+                return;
+            }
 
             if(secondCell != 0){
                 printf("\nCANNOT MOVE HERE! POSITION IS TAKEN\n\n");
@@ -457,7 +638,7 @@ void handleMove(){
             }
         }
        else{
-            printf("\nIT'S NOT YOUR TURN YET!!\n\n");
+            printf("\nILLEGAL MOVE!!\n\n");
        }
 }
 
