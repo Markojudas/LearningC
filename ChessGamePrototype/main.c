@@ -590,13 +590,15 @@ void handleMove(){
        secondCell = *x;
 
 
-            //debugger printouts!!!!
-            printf("\nfirst cell: %d\n", firstCell);
-            printf("row: %d\n", row1);
-            printf("column: %d\n\n", column1 + 1);
-            printf("second cell: %d\n", secondCell);
-            printf("row: %d\n", row2);
-            printf("column: %d\n\n", column2 + 1);
+            /*
+                debugger printouts!!!!
+                printf("\nfirst cell: %d\n", firstCell);
+                printf("row: %d\n", row1);
+                printf("column: %d\n\n", column1 + 1);
+                printf("second cell: %d\n", secondCell);
+                printf("row: %d\n", row2);
+                printf("column: %d\n\n", column2 + 1);
+            */
 
        if((currentTurn == 0)){
 
@@ -639,6 +641,7 @@ void handleMove(){
         }
        else{
             printf("\nILLEGAL MOVE!!\n\n");
+            return;
        }
 }
 
