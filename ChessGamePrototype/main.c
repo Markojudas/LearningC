@@ -12,7 +12,7 @@ static int chessBoard[8][8] = {
     {0, 0, 0, 0, 0, 0, 0, 0},         //chessBoard[3][0-7]
     {0, 0, 0, 0, 0, 0, 0, 0},         //chessBoard[4][0-7]
     {0, 0, 0, 0, 0, 0, 0, 0},         //chessBoard[5][0-7]
-    {1, 1, 0, 1, 1, 1, 1, 1},         //chessBoard[6][0-7]
+    {1, 1, 1, 1, 1, 1, 1, 1},         //chessBoard[6][0-7]
     {4, 2, 3, 5, 6, 3, 2, 4}          //chessBoard[7][0-7]
 };
 
@@ -25,7 +25,7 @@ void printBoard(){
     printf("BOARD* ");
 
     printf("%s", header);
-    printf("     ******************************************\n");
+    printf("\t****************************************\n");
 
     for(int x = 0; x < MAX_CELLS; x++){
         printf("%d    *  ", (OUT_OF_BOUNDS - x));
@@ -101,16 +101,14 @@ void getCell(char token[], int *cellContent, int *row, int *column){
 }
 
 int pawnMoves(int row1, int column1, int row2, int column2){
-    int rank;
-    int file;
+    int rank, file, frontCellWhite, frontCellBlack, destinationCell;
 
     rank = row2 - row1;
     file = column2 - column1;
 
-    int frontCellWhite = chessBoard[OUT_OF_BOUNDS - (row1 + 1)][column1];
-    int frontCellBlack = chessBoard[OUT_OF_BOUNDS - (row1 - 1)][column1];
-
-    int destinationCell = chessBoard[OUT_OF_BOUNDS - row2][column2];
+    frontCellWhite = chessBoard[OUT_OF_BOUNDS - (row1 + 1)][column1];
+    frontCellBlack = chessBoard[OUT_OF_BOUNDS - (row1 - 1)][column1];
+    destinationCell = chessBoard[OUT_OF_BOUNDS - row2][column2];
 
     if((currentTurn == 0) && (destinationCell == 0) && (frontCellWhite == 0)){
         if((row1 == 2) && (file == 0)){
@@ -172,8 +170,7 @@ int pawnMoves(int row1, int column1, int row2, int column2){
 }
 
 int rookMoves(int row1, int column1, int row2, int column2){
-    int rank;
-    int file;
+    int rank, file;
 
     rank = row2 - row1;
     file = column2 - column1;
@@ -239,64 +236,53 @@ int rookMoves(int row1, int column1, int row2, int column2){
 }
 
 int bishopMoves(int row1, int column1, int row2, int column2){
+    int rank, file, absoluteRank, absoluteFile, i;
 
-    int rank;
-    int file;
     rank = row2 - row1;
     file = column2 - column1;
 
-    int absoluteRank = abs(rank);
-    int absoluteFile = abs(file);
+    absoluteRank = abs(rank);
+    absoluteFile = abs(file);
 
     if((rank != 0) && (file != 0)){
         if(rank * -1 < 0){
+            i = row1 + 1;
             if(file * -1 > 0){
-                for(int i = row1+1; i < row2;){
-                    for(int j = column1-1; j > column2; j--){
-                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
-                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
-                            return 0;
-                            break;
-                        }
-                        i++;
+                for(int j = column1-1; j > column2; j--, i++){
+                    if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                        printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                        return 0;
+                        break;
                     }
                 }
             }
             if(file * - 1 < 0){
-                for(int i = row1+1; i < row2;){
-                    for(int j = column1+1; j < column2; j++){
-                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
-                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
-                            return 0;
-                            break;
-                        }
-                        i++;
+                for(int j = column1+1; j < column2; j++, i++){
+                    if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                        printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                        return 0;
+                        break;
                     }
                 }
             }
         }
         if(rank * -1 > 0){
+            i = row1 - 1;
             if(file * -1 < 0){
-                for(int i = row1-1; i > row2;){
-                    for(int j = column1+1; j < column2; j++){
-                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
-                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
-                            return 0;
-                            break;
-                        }
-                        i--;
+                for(int j = column1+1; j < column2; j++, i--){
+                    if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                        printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                        return 0;
+                        break;
                     }
                 }
             }
             if(file * -1 > 0){
-                for(int i = row1-1; i > row2;){
-                    for(int j = column1-1; j > column2; j--){
-                        if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
-                            printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
-                            return 0;
-                            break;
-                        }
-                        i--;
+                for(int j = column1-1; j > column2; j--, i--){
+                    if(chessBoard[OUT_OF_BOUNDS - i][j] != 0){
+                        printf("\nTHERE IS A PIECE IN BETWEEN. CANNOT MOVE\n\n");
+                        return 0;
+                        break;
                     }
                 }
             }
@@ -309,18 +295,21 @@ int bishopMoves(int row1, int column1, int row2, int column2){
             return 0;
         }
     }
+    else{
+        printf("\nINVALID MOVE\n\n");
+        return 0;
+    }
     return 0;
 }
 
 int queenMoves(int row1, int column1, int row2, int column2){
 
-    int rank;
-    int file;
+    int rank, file, absoluteRank, absoluteFile;
 
     rank = row2 - row1;
     file = column2 - column1;
-    int absoluteRank = abs(rank);
-    int absoluteFile = abs(file);
+    absoluteRank = abs(rank);
+    absoluteFile = abs(file);
 
     if(absoluteFile == absoluteRank){
         //moves as a bishop
@@ -344,8 +333,7 @@ int queenMoves(int row1, int column1, int row2, int column2){
 }
 
 int kingMoves(int row1, int column1, int row2, int column2){
-    int rank;
-    int file;
+    int rank, file;
 
     rank = row2 - row1;
     file = column2 - column1;
@@ -366,8 +354,7 @@ int kingMoves(int row1, int column1, int row2, int column2){
 
 int knightMoves(int row1, int column1, int row2, int column2){
 
-    int rank;
-    int file;
+    int rank, file;
 
     rank = row1 - row2;
     file = column1 - column2;
@@ -702,6 +689,23 @@ void handleCapture(){
     }
 }
 
+void handleHelp(){
+    printf("\n************************************************\n");
+    printf("\t\tCHESS GAME : HELP\n");
+    printf("************************************************\n");
+    printf("\nAa = letter from a-h\nBb = numbers from 1-8\nPositive Numbers = White Pieces\nNegative Numbers = Black Pieces\n");
+    printf("\nPIECES:");
+    printf("\n1 = Pawn\n2 = Knight\n3 = Bishop\n4 = Rook\n5 = Queen\n6 = King\n");
+    printf("\nCommand List:\n");
+    printf("mv <AB> <ab>");    printf("\t\tMoves AB to position ab\n");
+    printf("cp <AB> <ab>");    printf("\t\tAB captures ab\n");
+    printf("show"); printf("\t\t\tPrints out board\n");
+    printf("help"); printf("\t\t\tPrints legend & list of commands\n");
+    printf("quit"); printf("\t\t\tQuits the game\n\n");
+
+    printBoard();
+}
+
 int main()
 {
     char cmd[MAX_COMMAND_TOKEN_LENGTH];
@@ -709,12 +713,8 @@ int main()
 
     printf("*********************************************\n");
     printf("\t\tCHESS GAME!!!\n");
-    printf("*********************************************\n\n");
-    printf("Commands:\n");
-    printf("mv <AB> <ab>");    printf("\t\tMoves AB to position ab\n");
-    printf("cp <AB> <ab>");    printf("\t\tAB captures ab\n");
-    printf("show"); printf("\t\t\tPrints out board\n");
-    printf("quit"); printf("\t\t\tQuits the game\n\n");
+    printf("*********************************************\n");
+    printf("'help' for legend & list of commands\n\n");
 
     printBoard();
     printf("\n");
@@ -732,6 +732,14 @@ int main()
         if(!strcmp(cmd, "quit")){
             printf("\nExiting Game\n");
             break;
+        }
+        else if (!strcmp(cmd, "help")){
+            if(lastCharacter != '\n'){
+                printf("\nERROR\n");
+            }
+            else{
+                handleHelp();
+            }
         }
         else if (!strcmp(cmd, "show")){
             if(lastCharacter != '\n'){
