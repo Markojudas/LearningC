@@ -1,6 +1,6 @@
 CHESS GAME!! README FILE:
 
-Programmer: 	Jose R. Hernandez
+Programmer: 		Jose R. Hernandez
 PantherID:		1398700
 Course: 		Systems Programming - COP4338 U01 1211
 Instructor:		Kianoosh G. Boroojeni, Ph.D.
