@@ -7,55 +7,24 @@ Instructor:		Kianoosh G. Boroojeni, Ph.D.
 Semester:		Spring 2021
 
 
-This is a simple game of chess. I admit the code could be a bit cleaner but this is the best I was able to do to handle some situations as I was writing the code.
+IMPLEMENTED:
+1) Initialized the 2d array called chessBoard
+2) Implemented a printBoard() function to print out the chessBoard.
+3) Implemented a getCommandWord() function to tokenize the command word and user input.
+4) Implemented the two main functionalities of the program: mv - Move and cp - Capture (handleMove() and hanldeCapture())
+	The move and capture functions are quite similar. The move function checks if the target cell (or destination cell) is empty to be able to even make the move.
+	If the destination cell is empty it will determine whether it is the right turn (white-0 or black-1). It also determines if the input are not "out of bounds"
+	The Capture function does the same thing but it checks if there is a piece occupying the destination/target cell, if there is it checks if that piece of of the opposite color - white captures black and vice versa
+5) Implemented a getCell() function that helps with the above - it returns the content of a given cell
+6) Implemented a movePiece() function - this function identifies what kind of piece is making the move (either mere move or capture) and calls the function accordingly. 
+	The function calls getFileName() function for aesthetics purposes. if the FILE is 0 through 7 then it returns a letter a-h respectively.
+7) The movePiece() function, after the program returns 1 from the given piece function, it then calls the replaceCell() function - which is basically a swap function. The turn is switched from 0 to 1 and vice versa.
+8) Implemented the legal moves for all 6 pieces (pawn, rook, knight, bishop, queen and king).
+9) Implemented a "Help" function that prints out a legend and the list of commands. 
+10) Implement a "quit" command that just terminates the program.
 
-	Implemented Functions:
+NOT IMPLEMENTED:
+1) The program does NOT check whether or not the king is in "check" or even "checkmate"(bonus)
+2) DID NOT implement castling or en passant moves (Bonus)
+3) DID NOT implement pawn promotion (bonus)
  
- 1) The program starts by initializing a table simmulating a chess board
- 
- 2) The program displays the list of commands and prints the chess board. 
- 
- 2)	The program asks to first move a white piece. After move (mv) or capture (cp) functions are called it then asks for the black piece to move - oscilating until the end of the program.
-	I have initialized a variable to keep track (currentTurn). if currentTurn = 0 then it is the WHITE TURN, else if it's 1 then it is the BLACK TURN.
- 
- 3)	The program gives the object to quit the game.
- 
- 4) I am using the "lastCharacter" approach to get the command word & tokenize the string
-
-	Main Functions:
-	1) Show
-		Using a nested for loop I am displaying the multi-d array (chess table). Array[0][0] is printed out as rank 8 while Array[7][0] is printed as rank 1.
-	
-	2) mv <AB> <ab>
-		*I used this command as the building block of my program*
-		This command calls the handleMove() function.
-		It first tokenizes the string & delcares variables and corresponding pointers for these variables
-		
-		The handleMove() function then calls the getCell() function for the source location (firstCell) and the destination (secondCell). This is used to identify the piece and whether it is a white or black piece.
-		This is also used to determine the correct piece is chosen depending of the turn. Then it calls the movePiece() function.
-		
-		Please note that the getCell() function breaks down the input and locates said input in the array. Whereas 'a1' corresponds to array[7][0] and h8 corresponds to aray[0][7]
-		
-		The movePiece() function works for either turn and calls for the function for the corresponding chess piece. Then it calls swap or replaceCell() function. This works for the 'mv' and 'cp' commands.
-		
-		Lastly, if the destination cell is empty of (0), then it swaps. If the destination cell is NOT empty an error will be displayed.
-		
-	3) cp <AB> <ab>
-		This command calls the handleCapture() function.
-		
-		*this command is very similar to the move command. The only difference is that it checks whether the destination cell is occupied with the oposite color piece.
-		If so, then the movePiece() function is called and the same steps are performed.
-		
-	4) quit
-		This terminates the program
-		
-
-	Piece Movements:
-	1) 1/-1 : Pawn
-		It first checks if there is a piece in between the source cell and destination cell.
-		If there isn't a piece in between, then it checks if the original row/rank is 2(white) or 7(black). If so, the pawn moves 2 places up (white) or 2 places down (black). Otherwise it just moves one place up/down depending of color.
-		
-	
-	2) 2/-2 : Knight
-		
-		

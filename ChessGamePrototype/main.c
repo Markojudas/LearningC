@@ -1,3 +1,14 @@
+/*
+    Programmer: Jose R Hernandez
+    Course: Systems Programming - COP4338 U01 1211
+    Semester: Spring 2021
+    Instructor: Kianoosh G. Boroojeni, Ph.D.
+    Assignment#: 3
+
+    This program simulates a chess game.
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +27,7 @@ static int chessBoard[8][8] = {
     {4, 2, 3, 5, 6, 3, 2, 4}          //chessBoard[7][0-7]
 };
 
-static int currentTurn = 0;
+static int currentTurn = 0;  //This will determine whose turn it is (0 = white, 1 = black)
 
 void printBoard(){
     char *header = "  a |  b |  c |  d |  e |  f |  g |  h |\n";
@@ -38,6 +49,7 @@ void printBoard(){
 }
 
 char getCommandWord(char command[], int maxLength) {
+    //this function is used to "tokenize" the command & the parameters provided by the user
 	char lastCharacter;
 	int i;
 
@@ -56,6 +68,8 @@ char getCommandWord(char command[], int maxLength) {
 }
 
 void getCell(char token[], int *cellContent, int *row, int *column){
+    //This is function is to obtain the contents of a given cell
+    //Using this function to help determine a valid move/capture or even if the input is valid.
 
      char inputx;
 
@@ -101,6 +115,12 @@ void getCell(char token[], int *cellContent, int *row, int *column){
 }
 
 int pawnMoves(int row1, int column1, int row2, int column2){
+    //This function defines the pathways of the Pawn.
+    //The pawn moves 2 spaces up if and only if the WHITE pawn is at its original position (rank 2)
+    //The pawn moves 2 spaces down if and only if the BLACK pawn is at its original position (rank 7)
+    //The pawn captures 1 space up and to the left or right (diagonally) if White and 1 space down to the left or right if Black
+    //the pawn is not able to jump any piece.
+
     int rank, file, frontCellWhite, frontCellBlack, destinationCell;
 
     rank = row2 - row1;
@@ -170,6 +190,11 @@ int pawnMoves(int row1, int column1, int row2, int column2){
 }
 
 int rookMoves(int row1, int column1, int row2, int column2){
+    //this function defines the pathways for the rook
+    //The rook moves left/right or up/down. Meaning if the rank remains unchanged, then the file decrease or increase
+    //if the file remains unchanged, then the rank decreases or increases
+    //the rook cannot jump over pieces.
+
     int rank, file;
 
     rank = row2 - row1;
@@ -236,6 +261,12 @@ int rookMoves(int row1, int column1, int row2, int column2){
 }
 
 int bishopMoves(int row1, int column1, int row2, int column2){
+    //this function defines the pathways for the bishop
+    //the possible moves of a bishop are in a X shape.
+    //The ratio of the rank to file is abs(1). Meaning if the rank changes +1 the file changes +1 or -1
+    //if the rank changes is -1, the file also changes +1 or -1
+    //the bishop cannot jump over pieces
+
     int rank, file, absoluteRank, absoluteFile, i;
 
     rank = row2 - row1;
@@ -303,6 +334,9 @@ int bishopMoves(int row1, int column1, int row2, int column2){
 }
 
 int queenMoves(int row1, int column1, int row2, int column2){
+    //this function defines the pathways for the queen
+    //The Queen can either move as a rook or move as a bishop
+    //Here the function checks for the characteristics of rook or bishop and calls their functions accordingly
 
     int rank, file, absoluteRank, absoluteFile;
 
@@ -333,6 +367,10 @@ int queenMoves(int row1, int column1, int row2, int column2){
 }
 
 int kingMoves(int row1, int column1, int row2, int column2){
+
+    //this function defines the pathways of the King.
+    //The king moves too all cells surrounding the king.
+    //1 position
     int rank, file;
 
     rank = row2 - row1;
@@ -353,6 +391,10 @@ int kingMoves(int row1, int column1, int row2, int column2){
 }
 
 int knightMoves(int row1, int column1, int row2, int column2){
+    //the knight moves in an L fashion
+    //either 1 step right/left and 2 up/down
+    //Or 2 steps right/left and 1 up/down
+    //this is the only piece that is allowed to jump over other pieces
 
     int rank, file;
 
@@ -394,6 +436,8 @@ int knightMoves(int row1, int column1, int row2, int column2){
 }
 
 char getFileName(int file){
+    //this function is purely for aesthetics
+    //used to obtain the file for displaying purposes
 
     char fileName;
 
@@ -433,6 +477,10 @@ char getFileName(int file){
 
 void replaceCell(int row1, int column1, int row2, int column2){
 
+    //this function just does the swapping once the pathways have been proven to be valid.
+    //it just moves/captures the destination cell, replacing the source cell with a 0 (empty)
+    //The function sets the next turn
+
     int tempCell = chessBoard[OUT_OF_BOUNDS - row1][column1];
 
     chessBoard[OUT_OF_BOUNDS - row1][column1] = 0;
@@ -449,6 +497,10 @@ void replaceCell(int row1, int column1, int row2, int column2){
 }
 
 void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column2){
+    //this function identifies the kind of piece that's performing the commands
+    //It calls that pieces function to see if the move/capture is valid
+    //if so, it then calls the "swap" function (replaceCell).
+    //it uses the getFileName function just for display purposes
 
     char fileName2 = getFileName(column2);
 
@@ -544,6 +596,12 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
 }
 
 void handleMove(){
+    //this function handles the move commands
+    //it tokenizes the parameters received by the INPUT
+    //it obtains the content of the cell
+    //it makes sure that right piece is being moved depending of TURN
+    //it also makes sure that the parameters are not "out of bounds"
+
     char token1[MAX_COMMAND_TOKEN_LENGTH];
     char token2[MAX_COMMAND_TOKEN_LENGTH];
     int firstCell, secondCell, cellContent, row1, row2, column1, column2;
@@ -622,6 +680,11 @@ void handleMove(){
 }
 
 void handleCapture(){
+
+    //this function is very similar to the move commands
+    //main difference is that it checks whether the destinationCell or the cell to be captured is empty or NOT
+    //if it is empty there is nothing to capture.
+
     char token1[MAX_COMMAND_TOKEN_LENGTH];
     char token2[MAX_COMMAND_TOKEN_LENGTH];
     int firstCell, secondCell, cellContent, row1, row2, column1, column2;
@@ -690,6 +753,8 @@ void handleCapture(){
 }
 
 void handleHelp(){
+    //this is the display for the Help command - purely aesthetics
+
     printf("\n************************************************\n");
     printf("\t\tCHESS GAME : HELP\n");
     printf("************************************************\n");
