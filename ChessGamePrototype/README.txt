@@ -23,8 +23,13 @@ IMPLEMENTED:
 9) Implemented a "Help" function that prints out a legend and the list of commands. 
 10) Implement a "quit" command that just terminates the program.
 
+BONUS IMPLEMENTED:
+1) Pawn Promotion -> programmed the pawn promotion within the pawnMoves() function. If the white pawn reaches rank 8 (array[0][0-> 7]) the program asks the user whether or not they want to promote the pawn.
+	if yes, the program asks to choose between {queen, bishop, rook, knight}. Depending which the choose it replaces the contents of moving cell from 1 to {|6|, |3|, |2|, |4|} representing the chosen piece
+	then the function returns 1 to the movePiece() function and to the replaceCell(). This works just the same for the capture function. 
+
 NOT IMPLEMENTED:
 1) The program does NOT check whether or not the king is in "check" or even "checkmate"(bonus)
 2) DID NOT implement castling or en passant moves (Bonus)
-3) DID NOT implement pawn promotion (bonus)
+
  

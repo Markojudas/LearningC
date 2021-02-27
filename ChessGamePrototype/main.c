@@ -4,9 +4,7 @@
     Semester: Spring 2021
     Instructor: Kianoosh G. Boroojeni, Ph.D.
     Assignment#: 3
-
     This program simulates a chess game.
-
 */
 
 #include <stdio.h>
@@ -28,6 +26,7 @@ static int chessBoard[8][8] = {
 };
 
 static int currentTurn = 0;  //This will determine whose turn it is (0 = white, 1 = black)
+static char promoSelec[MAX_COMMAND_TOKEN_LENGTH]; //this is for pawn promotion & display purposes once the promotion takes place
 
 void printBoard(){
     char *header = "  a |  b |  c |  d |  e |  f |  g |  h |\n";
@@ -122,6 +121,7 @@ int pawnMoves(int row1, int column1, int row2, int column2){
     //the pawn is not able to jump any piece.
 
     int rank, file, frontCellWhite, frontCellBlack, destinationCell;
+    char promoAns[MAX_COMMAND_TOKEN_LENGTH];
 
     rank = row2 - row1;
     file = column2 - column1;
@@ -140,6 +140,35 @@ int pawnMoves(int row1, int column1, int row2, int column2){
            }
         }
         else if((rank == 1) && (file == 0)){
+            if(row2 == 8){ //pawn promotion
+                printf("\nDO YOU WANT TO PROMOTE YOUR PAWN?: (yes/no) ");
+                getCommandWord(promoAns, MAX_COMMAND_TOKEN_LENGTH);
+                if(!strcmp(promoAns, "yes")){
+                    printf("\nQUEEN, BISHOP, ROOK, KNIGHT?(lowercase): ");
+                    getCommandWord(promoSelec, MAX_COMMAND_TOKEN_LENGTH);
+                    if(!strcmp(promoSelec, "queen")){
+                        printf("QUEENING!\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 6;
+                    }
+                    else if(!strcmp(promoSelec, "bishop")){
+                        printf("UNDERPROMOTION: BISHOP\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 3;
+                    }
+                    else if(!strcmp(promoSelec, "rook")){
+                        printf("UNDERPROMOTION: ROOK\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 4;
+                    }
+                    else if(!strcmp(promoSelec, "knight")){
+                        printf("UNDERPROMOTION: KNIGHT\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 2;
+                    }
+                    else{
+                        printf("\nINVALID SELECTION\n");
+                        return 0;
+                    }
+
+                }
+            }
             return 1;
         }
         else{
@@ -157,6 +186,35 @@ int pawnMoves(int row1, int column1, int row2, int column2){
             }
         }
         else if((rank == -1) && (file == 0)){
+            if(row2 == 1){ //pawn promotion
+                printf("\nDO YOU WANT TO PROMOTE YOUR PAWN?: (yes/no) ");
+                getCommandWord(promoAns, MAX_COMMAND_TOKEN_LENGTH);
+                if(!strcmp(promoAns, "yes")){
+                    printf("\nQUEEN, BISHOP, ROOK, KNIGHT?(lowercase): ");
+                    getCommandWord(promoSelec, MAX_COMMAND_TOKEN_LENGTH);
+                    if(!strcmp(promoSelec, "queen")){
+                        printf("QUEENING!\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -6;
+                    }
+                    else if(!strcmp(promoSelec, "bishop")){
+                        printf("UNDERPROMOTION: BISHOP\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -3;
+                    }
+                    else if(!strcmp(promoSelec, "rook")){
+                        printf("UNDERPROMOTION: ROOK\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -4;
+                    }
+                    else if(!strcmp(promoSelec, "knight")){
+                        printf("UNDERPROMOTION: KNIGHT\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -2;
+                    }
+                    else{
+                        printf("\nINVALID SELECTION\n");
+                        return 0;
+                    }
+
+                }
+            }
             return 1;
         }
         else{
@@ -166,6 +224,35 @@ int pawnMoves(int row1, int column1, int row2, int column2){
     }
     else if((currentTurn == 0) && (destinationCell != 0)){
         if((rank == 1) && ((file == 1) || (file == -1))){
+            if(row2 == 8){ //pawn promotion
+                printf("\nDO YOU WANT TO PROMOTE YOUR PAWN?: (yes/no) ");
+                getCommandWord(promoAns, MAX_COMMAND_TOKEN_LENGTH);
+                if(!strcmp(promoAns, "yes")){
+                    printf("\nQUEEN, BISHOP, ROOK, KNIGHT?(lowercase): ");
+                    getCommandWord(promoSelec, MAX_COMMAND_TOKEN_LENGTH);
+                    if(!strcmp(promoSelec, "queen")){
+                        printf("QUEENING!\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 6;
+                    }
+                    else if(!strcmp(promoSelec, "bishop")){
+                        printf("UNDERPROMOTION: BISHOP\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 3;
+                    }
+                    else if(!strcmp(promoSelec, "rook")){
+                        printf("UNDERPROMOTION: ROOK\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 4;
+                    }
+                    else if(!strcmp(promoSelec, "knight")){
+                        printf("UNDERPROMOTION: KNIGHT\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = 2;
+                    }
+                    else{
+                        printf("\nINVALID SELECTION\n");
+                        return 0;
+                    }
+
+                }
+            }
             return 1;
         }
         else{
@@ -175,6 +262,35 @@ int pawnMoves(int row1, int column1, int row2, int column2){
     }
     else if((currentTurn == 1) && (destinationCell != 0)){
         if((rank == -1) && ((file == 1) || (file == -1))){
+            if(row2 == 1){   //pawn promotion
+                printf("\nDO YOU WANT TO PROMOTE YOUR PAWN?: (yes/no) ");
+                getCommandWord(promoAns, MAX_COMMAND_TOKEN_LENGTH);
+                if(!strcmp(promoAns, "yes")){
+                    printf("\nQUEEN, BISHOP, ROOK, KNIGHT?(lowercase): ");
+                    getCommandWord(promoSelec, MAX_COMMAND_TOKEN_LENGTH);
+                    if(!strcmp(promoSelec, "queen")){
+                        printf("QUEENING!\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -6;
+                    }
+                    else if(!strcmp(promoSelec, "bishop")){
+                        printf("UNDERPROMOTION: BISHOP\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -3;
+                    }
+                    else if(!strcmp(promoSelec, "rook")){
+                        printf("UNDERPROMOTION: ROOK\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -4;
+                    }
+                    else if(!strcmp(promoSelec, "knight")){
+                        printf("UNDERPROMOTION: KNIGHT\n");
+                        chessBoard[OUT_OF_BOUNDS - row1][column1] = -2;
+                    }
+                    else{
+                        printf("\nINVALID SELECTION\n");
+                        return 0;
+                    }
+
+                }
+            }
             return 1;
         }
         else{
@@ -508,13 +624,35 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 1 :
             if((cell1 * -1) > 0){
                 if(pawnMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK PAWN TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] == -1){
+                        printf("\nMOVING BLACK PAWN TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else if(cell2 != 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] == -1){
+                        printf("\nBLACK PAWN HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
+                    else if(cell2 != 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] != -1){
+                        printf("\nBLACK PAWN HAS CAPTURED %c%d & HAS BEEN PROMOTED TO %s\n\n", fileName2, row2, promoSelec);
+                    }
+                    else if(cell2 == 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] != -1){
+                        printf("\nPAWN PROMOTED TO %s!\n\n", promoSelec);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(pawnMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE PAWN TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] == 1){
+                        printf("\nMOVING WHITE PAWN TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else if(cell2 != 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] == 1){
+                        printf("\nWHITE PAWN HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
+                    else if(cell2 != 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] != 1){
+                        printf("\nWHITE PAWN HAS CAPTURE %c%d & HAS BEEN PROMOTED TO %s\n\n", fileName2, row2, promoSelec);
+                    }
+                    else if(cell2 == 0 && chessBoard[OUT_OF_BOUNDS - row1][column1] != 1){
+                        printf("PAWN PROMOTED TO %s\n\n", promoSelec);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
@@ -522,13 +660,23 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 4 :
             if((cell1 * -1) > 0){
                 if(rookMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK ROOK TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING BLACK ROOK TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nBLACK ROOK HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(rookMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE ROOK TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING WHITE ROOK TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nWHITE ROOK HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
@@ -536,13 +684,24 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 2 :
             if((cell1 * -1) > 0){
                 if(knightMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK KNIGHT TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING BLACK KNIGHT TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nBLACK KNIGHT HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
+
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(knightMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE KNIGHT TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING WHITE KNIGHT TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("WHITE KNIGHT HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
@@ -550,13 +709,23 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 3 :
             if((cell1 * -1) > 0){
                 if(bishopMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK BISHOP TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING BLACK BISHOP TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nBLACK BISHOP HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(bishopMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE BISHOP TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING WHITE BISHOP TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nWHITE BISHOP HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
@@ -564,13 +733,23 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 5 :
             if((cell1 * -1) > 0){
                 if(queenMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK QUEEN TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING BLACK QUEEN TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nBLACK QUEEN HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(queenMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE QUEEN TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING WHITE QUEEN TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nWHITE QUEEN HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
@@ -578,13 +757,23 @@ void movePiece(int cell1, int row1, int column1, int cell2, int row2, int column
         case 6 :
             if((cell1 * -1) > 0){
                 if(kingMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING BLACK KING TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING BLACK KING TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nBLACK KING HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
             else if((cell1 * -1) < 0){
                 if(kingMoves(row1, column1, row2, column2) == 1){
-                    printf("\nMOVING WHITE KING TO %c%d!\n\n", fileName2, row2);
+                    if(cell2 == 0){
+                        printf("\nMOVING WHITE KING TO %c%d!\n\n", fileName2, row2);
+                    }
+                    else{
+                        printf("\nWHITE KING HAS CAPTURED %c%d!\n\n", fileName2, row2);
+                    }
                     replaceCell(row1, column1, row2, column2);
                 }
             }
