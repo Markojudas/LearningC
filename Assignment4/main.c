@@ -131,7 +131,7 @@ void handleSummary() {
         printf("\tNUMBER OF VERTICES: %d\n", numberOfVertex);
         printf("\tDIRECTION: %d\n", polygons[i].shiftDirection);
         for (int j = 0; j < polygons[i].numberOfVertices; j++) {
-            printf("\tVERTICES #%d: (%d, %d)\n", i + 1, (polygons[i].vertexList[j].x - '0'), (polygons[i].vertexList[j].y - '0'));
+            printf("\tVERTEX #%d: (%d, %d)\n", j + 1, (polygons[i].vertexList[j].x - '0'), (polygons[i].vertexList[j].y - '0'));
         }
 
         for (j = 0; j < polygons[i].numberOfVertices; j++) {
