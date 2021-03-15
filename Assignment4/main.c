@@ -114,6 +114,16 @@ void handleAdd() {
             break;
     }
 
+    if(count % 2){
+        printf("\nERROR IN INPUT! ODD NUMBER OF COORDINATES PASSED\n");
+        return;
+    }
+
+    if(numOfVert < 3){
+        printf("\nERROR IN INPUT! A POLYGON NEEDS AT LEAT 3 VERTEXES\n");
+        return;
+    }
+
     if (numOfVert == 0) {
         printf("\nNO POLYGON TO ADD\n");
         return;
