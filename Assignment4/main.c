@@ -47,7 +47,20 @@ Vertex makeVertices(int x, int y) {
 char getCommandWord(char command[], int maxLength) {
     char lastCharacter;
     int i;
+
     for (i = 0; i < maxLength - 1 && (command[i] = getchar()) != ' ' && command[i] != '\n'; i++);
+    lastCharacter = command[i];
+    command[i] = '\0';
+
+    return lastCharacter;
+}
+
+char getVertexToken(char command[], int maxLength) {
+
+    char lastCharacter;
+    int i;
+
+    for (i = 0; i < maxLength - 1 && (command[i] = getchar()) != '\n'; i++);
     lastCharacter = command[i];
     command[i] = '\0';
 
@@ -56,62 +69,133 @@ char getCommandWord(char command[], int maxLength) {
 
 void handleAdd() {
     char token[MAX_TOKEN_TOKEN_LENGTH];
-    Vertex* vertices = (Vertex*)malloc(sizeof(Vertex)*100); //declaring a Vertex* list of Vertices for a polygon & allocating memory for it
-    Polygon *p_polygon = (Polygon*)malloc(sizeof(Polygon)); //declaring a polygon* polygon pointer & allocating memory for it
-    int x, y;
+    Vertex* vertexes = (Vertex*)malloc(sizeof(Vertex) * 100); //declaring a Vertex* list of Vertices for a polygon & allocating memory for it
+    Polygon* p_polygon = (Polygon*)malloc(sizeof(Polygon)); //declaring a polygon* polygon pointer & allocating memory for it
+    int x, y, i, j;
 
-    if (getCommandWord(token, MAX_TOKEN_TOKEN_LENGTH) != '\n') {
-        printf("\nTOO MANY ARGUEMENTS FOR THE ADD COMMAND\n");
-        while (getCommandWord(token, MAX_TOKEN_TOKEN_LENGTH) != '\n');
+    if (getVertexToken(token, MAX_TOKEN_TOKEN_LENGTH) != '\n') {
+        printf("\nTOO MANY ARGUMENTS FOR THE ADD COMMAND\n");
+        while (getVertexToken(token, MAX_TOKEN_TOKEN_LENGTH) != '\n');
         return;
     }
-    int size_of_token = 0;
+    int numOfVert = 0;
 
-    //getting the size of the input token
-    for (int i = 0; i < MAX_TOKEN_TOKEN_LENGTH && token[i] != '\0'; i++) {
-        ++size_of_token;
+    //making a vertex & adding it to the vertexes' list for the polygon
+    i = -1;
+    char* temp;
+    int count = 0, k;
+    while (token[++i]) {
+        if (token[i] == ' ')//skipping white spaces
+            continue;
+        j = i;//recording the beginning index of a new number
+
+        while (token[++i])//splitting over white space
+            if (token[i] == ' ')
+                break;
+        temp = malloc(i - j + 1);//+1 for \0
+        k = 0;
+        while (k < i-j){
+            temp[k] = token[j + k];
+            k++;
+        }
+        temp[k] = '\0';
+        count++;
+        if(count%2)
+            x = atoi(temp);
+        else {
+            y = atoi(temp);
+            ++numOfVert;
+            Vertex v = makeVertices(x, y);
+            if (vertexes) {
+                vertexes[count/2-1] = v;
+            }
+        }
+        if (!token[i])
+            break;
     }
 
-    //making sure the input has enough to create the x's and y's (it has to be an even amount of character digits)
-    if ((size_of_token % 2) != 0) {
-        printf("'\nINVALID INPUT: IT HAS TO BE AN EVEN AMOUNT OF DIGITS\n");
+    if (numOfVert == 0) {
+        printf("\nNO POLYGON TO ADD\n");
         return;
     }
 
-    //making a vertex & adding it to the vertices' list for the polygon
-    for (int i = 0, j = 0; i < size_of_token; i += 2, j++) {
-        x = token[i];
-        y = token[i + 1];
-        Vertex v = makeVertices(x, y);
-        vertices[j] = v;
+    //making a polygon - number of vertexes is the size of the token/2 since every two digits makes the x and the y
+    if (p_polygon) {
+        p_polygon->numberOfVertices = numOfVert;
+        p_polygon->shiftDirection = NONE;
+        p_polygon->vertexList = vertexes;
     }
-
-    //making a polygon - number of vertices is the size of the token/2 since every two digits makes the x and the y
-    p_polygon->numberOfVertices = size_of_token/2;
-    p_polygon->shiftDirection = NONE;
-    p_polygon->vertexList = vertices;
 
     //debugging print statements
     printf("\nPOLYGON ADDED!");
-    printf("\n\tNUMBER OF VERTICES: %d", p_polygon->numberOfVertices);
-    printf("\n\tDIRECTION: %d\n", p_polygon->shiftDirection);
-    for (int i = 0; i < p_polygon->numberOfVertices; i++) {
-        printf("\tVERTICES #%d: (%d, %d)\n", i + 1, (p_polygon->vertexList[i].x - '0'), (p_polygon->vertexList[i].y - '0'));
+    if (p_polygon) {
+        printf("\n\tNUMBER OF VERTICES: %d", p_polygon->numberOfVertices);
+    }
+    printf("\n\tPOLYGON NOT CURRENTLY SET TO MOVE IN ANY DIRECTION\n");
+    if (p_polygon) {
+        for (i = 0; i < p_polygon->numberOfVertices; i++) {
+            if (p_polygon) {
+                x = p_polygon->vertexList[i].x;
+                y = p_polygon->vertexList[i].y;
+                printf("\tVERTEX #%d: (%d, %d)\n", i + 1, x, y);
+            }
+        }
     }
 
     //adding the polygon to the program's list of polygon
-    for (int i = 0; i < MAX_NUM_OF_POLYGONS; i++) {
+    for (i = 0; i < MAX_NUM_OF_POLYGONS; i++) {
         if (polygons[i].numberOfVertices == 0) {
-            polygons[i] = *p_polygon;
+            if(p_polygon){
+                polygons[i] = *p_polygon;
+            }
             break;
         }
     }
 }
 
+char* getDirectionStr(int direction) {
+
+    char* str;
+    str = malloc(11);
+
+    switch (direction) {
+    case NONE:
+        str = "NONE";
+        break;
+    case UP:
+        str = "UP";
+        break;
+    case DOWN:
+        str = "DOWN";
+        break;
+    case LEFT:
+        str = "LEFT";
+        break;
+    case RIGHT:
+        str = "RIGHT";
+        break;
+    case UP | RIGHT:
+        str = "UP-RIGHT";
+        break;
+    case DOWN | RIGHT:
+        str = "DOWN-RIGHT";
+        break;
+    case UP | LEFT:
+        str = "UP-LEFT";
+        break;
+    case DOWN | LEFT:
+        str = "DOWN-LEFT";
+        break;
+    default:
+        break;
+
+    }
+    return str;
+}
+
 void handleSummary() {
 
-    int i = 0;
-    int j = 0;
+    int i, j;
 
     //making sure the list of polygons is not empty
     if (polygons[0].numberOfVertices == 0) {
@@ -120,30 +204,32 @@ void handleSummary() {
     }
 
     //accessing & printing the list of polygons
-    printf("\nACCESSING THE PROGRAM'S LIST\n\n");
+    printf("\n****************ACCESSING THE PROGRAM'S LIST*************\n\n");
     for (i = 0; i < MAX_NUM_OF_POLYGONS && polygons[i].numberOfVertices != 0; i++) {
 
         int av_x = 0;
         int av_y = 0;
         int numberOfVertex = polygons[i].numberOfVertices;
+        int directionStr = polygons[i].shiftDirection;
 
         printf("POLYGON %d: \n", i + 1);
         printf("\tNUMBER OF VERTICES: %d\n", numberOfVertex);
-        printf("\tDIRECTION: %d\n", polygons[i].shiftDirection);
-        for (int j = 0; j < polygons[i].numberOfVertices; j++) {
-            printf("\tVERTEX #%d: (%d, %d)\n", j + 1, (polygons[i].vertexList[j].x - '0'), (polygons[i].vertexList[j].y - '0'));
+        printf("\tSHIFT DIRECTION SET TO: %s\n", getDirectionStr(directionStr));
+        for (j = 0; j < polygons[i].numberOfVertices; j++) {
+            printf("\tVERTEX #%d: (%d, %d)\n", j + 1, (polygons[i].vertexList[j].x), (polygons[i].vertexList[j].y));
         }
 
         for (j = 0; j < polygons[i].numberOfVertices; j++) {
-            int x = polygons[i].vertexList[j].x - '0';
+            int x = polygons[i].vertexList[j].x;
             av_x += x;
 
-            int y = polygons[i].vertexList[j].y - '0';
+            int y = polygons[i].vertexList[j].y;
             av_y += y;
         }
         //getting the average of the x-coordinates and the y-coordinates to find the Centroid of the polygon
-        printf("\n\tCENTROID: (%.1f, %.1f)\n\n", (double)av_x/numberOfVertex, (double)av_y/numberOfVertex);
+        printf("\n\tCENTROID: (%.1f, %.1f)\n\n", (double)av_x / numberOfVertex, (double)av_y / numberOfVertex);
     }
+    printf("\n****************END OF LIST******************************\n\n");
 }
 
 void handleTurn() {
@@ -151,28 +237,25 @@ void handleTurn() {
     char token1[MAX_TOKEN_TOKEN_LENGTH];
     char token2[MAX_TOKEN_TOKEN_LENGTH];
     int polyIndex;  //variable to use as index for the desired polygon in the list
-    char dirMove[512]; //string variable to store then shift direction set for the polygon
-
+    char* dirMove; //string variable to store then shift direction set for the polygon
+    dirMove = malloc(11);
 
     if (getCommandWord(token1, MAX_TOKEN_TOKEN_LENGTH) == '\n') {
-        printf("\nTOO FEW ARGUEMENTS FOR THE TURN COMMAND\n");
+        printf("\nTOO FEW ARGUMENTS FOR THE TURN COMMAND\n");
         return;
     }
     if (getCommandWord(token2, MAX_TOKEN_TOKEN_LENGTH) != '\n') {
-        printf("\nTOO MANY ARGUEMENTS FOR TURN COMMAND\n");
+        printf("\nTOO MANY ARGUMENTS FOR TURN COMMAND\n");
         while (getCommandWord(token2, MAX_TOKEN_TOKEN_LENGTH) != '\n');
         return;
     }
 
     polyIndex = atoi(token1) - 1;
+    dirMove = token2;
 
     if (polyIndex < 0) {
-        printf("\nNO SUCH POLYGON. PLEASE CHOOSE STARTING FROM 1\n");
+        printf("\nERROR IN INPUT: ARGUMENT 1 MUST BE A NON-ZERO NUMBER\n");
         return;
-    }
-    //getting shift direction of the polygon and initializing the string variable
-    for (int i = 0; i < (sizeof(token2) / sizeof(token2[0])); i++) {
-        dirMove[i] = token2[i];
     }
 
     //making sure the polygon at the polyIndex position is not empty
@@ -223,26 +306,33 @@ void handleShift() {
 
     char token1[MAX_TOKEN_TOKEN_LENGTH];
     char token2[MAX_TOKEN_TOKEN_LENGTH];
-    int polyIndex;
-    int change = 0;
-    int changeDir;
+    int polyIndex, i, change = -1, changeDir;
 
     if (getCommandWord(token1, MAX_TOKEN_TOKEN_LENGTH) == '\n') {
-        printf("\nTOO FEW ARGUEMENTS FOR THE SHIFT COMMAND\n");
+        printf("\nTOO FEW ARGUMENTS FOR THE SHIFT COMMAND\n");
         return;
     }
     if (getCommandWord(token2, MAX_TOKEN_TOKEN_LENGTH) != '\n') {
-        printf("\nTOO MANY ARGUEMENTS FOR SHIFT COMMAND\n");
+        printf("\nTOO MANY ARGUMENTS FOR SHIFT COMMAND\n");
         while (getCommandWord(token2, MAX_TOKEN_TOKEN_LENGTH) != '\n');
         return;
     }
 
     polyIndex = atoi(token1) - 1;
-    change = atoi(token2);
+    change = atoi(token2) - 1;
+
+    //handling if the atoi() returns 0;
+    if (change >= 0) {
+        change++;
+    }
+    else {
+        printf("\nERROR IN INPUT: ARGUMENT 2 MUST BE A NON-ZERO NUMBER\n");
+        return;
+    }
 
     //making sure we get the right index from input
     if (polyIndex < 0) {
-        printf("\nNO SUCH POLYGON. PLEASE CHOOSE STARTING FROM 1\n");
+        printf("\nERROR IN INPUT: ARGUMENT 1 MUST BE A NUMBER STARTING FROM 1\n");
         return;
     }
     //making sure there is a polygon at the polyIndex position
@@ -260,69 +350,69 @@ void handleShift() {
 
     //making the move of the polygon depending the direction and the amount of spaces from input
     switch (changeDir) {
-        case 1:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES UP\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].y += change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 2:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].y -= change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 4:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES LEFT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x -= change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 8:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES RIGHT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x += change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 9:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES UP-RIGHT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x += change;
-                polygons[polyIndex].vertexList[i].y += change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 5:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES UP-LEFT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x -= change;
-                polygons[polyIndex].vertexList[i].y += change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 10:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN-RIGHT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x += change;
-                polygons[polyIndex].vertexList[i].y -= change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        case 6:
-            printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN-LEFT\n", polyIndex + 1, change);
-            for (int i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
-                polygons[polyIndex].vertexList[i].x -= change;
-                polygons[polyIndex].vertexList[i].y -= change;
-                polygons[polyIndex].shiftDirection = NONE;
-            }
-            break;
-        default:
-            printf("\nPOLYGON REMAINS UNMOVED\n");
-            break;
+    case UP:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES UP\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].y += change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case DOWN:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].y -= change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case LEFT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES LEFT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x -= change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case RIGHT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES RIGHT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x += change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case UP | RIGHT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES UP-RIGHT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x += change;
+            polygons[polyIndex].vertexList[i].y += change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case UP | LEFT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES UP-LEFT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x -= change;
+            polygons[polyIndex].vertexList[i].y += change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case DOWN | RIGHT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN-RIGHT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x += change;
+            polygons[polyIndex].vertexList[i].y -= change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    case DOWN | LEFT:
+        printf("\nPOLYGON %d HAS MOVED %d SPACES DOWN-LEFT\n", polyIndex + 1, change);
+        for (i = 0; i < polygons[polyIndex].numberOfVertices; i++) {
+            polygons[polyIndex].vertexList[i].x -= change;
+            polygons[polyIndex].vertexList[i].y -= change;
+            polygons[polyIndex].shiftDirection = NONE;
+        }
+        break;
+    default:
+        printf("\nPOLYGON REMAINS UNMOVED\n");
+        break;
     }
 }
 
@@ -333,7 +423,7 @@ int main() {
 
     printf("\nLIST OF COMMANDS:\n\n");
     printf("*****************************************************************************************************\n\n");
-    printf("\t* add <x1y1x2y2......xnyn>\t CREATES AND STORES POLYGON IN LIST\n\n");
+    printf("\t* add <x1 y1 x2 y2......xn yn>\t CREATES AND STORES POLYGON IN LIST\n\n");
     printf("\t* summary\t\t\t SHOWS THE LIST OF POLYGONS CREATED\n\n");
     printf("\t* turn <k> <DIRECTION>\t\t SETS THE SHIFT DIRECTION OF THE POLYGON k\n");
     printf("\t\t\t\t\t up, down, left, right, up-right/right-up,\n\t\t\t\t\t up-left/left-up, down-right/right-down, down-left/left-down\n\n");
@@ -346,7 +436,7 @@ int main() {
         lastCharacter = getCommandWord(command, MAX_TOKEN_TOKEN_LENGTH);
 
         if (!strcmp(command, "quit")) {
-            printf("\nTERMINATING PROGRAM\n\n");
+            printf("\nTERMINATING PROGRAM\n");
             break;
         }
         else if (!strcmp(command, "add")) {
